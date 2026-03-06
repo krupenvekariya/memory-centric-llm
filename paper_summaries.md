@@ -1,27 +1,31 @@
-# Paper Summaries — Person B Reading List
+# Paper Summaries
 
-## 1. PagedAttention / vLLM (Kwon et al., 2023)
+## PERSON A
+
+## 1. FlashAttention-2 (Dao, 2023)
 - **Problem:**
 - **Method:**
 - **Key result:**
 - **Relevance to us:**
 - **One number to remember:**
 
-## 2. KVQuant (Hooper et al., 2024)
+## 2. Roofline Model (Williams et al., 2009)
 - **Problem:**
 - **Method:**
 - **Key result:**
 - **Relevance to us:**
 - **One number to remember:**
 
-## 3. H2O / ScissorHands (Zhang et al., 2023)
+## PERSON B
+
+## 3. PagedAttention / vLLM (Kwon et al., 2023)
 - **Problem:**
 - **Method:**
 - **Key result:**
 - **Relevance to us:**
 - **One number to remember:**
 
-## 4. FlexGen (Sheng et al., 2023)
+## 4. KVQuant (Hooper et al., 2024)
 - **Problem:**
 - **Method:**
 - **Key result:**
