@@ -1,0 +1,10 @@
+quant,seq_len,energy_uj,bottleneck
+FP16,128,2516.5824,memory
+FP16,256,5033.1648,memory
+FP16,512,10066.3296,memory
+INT8,128,1258.2912,memory
+INT8,256,2516.5824,memory
+INT8,512,5033.1648,memory
+INT4,128,629.1456,memory
+INT4,256,1258.2912,memory
+INT4,512,2516.5824,memory
