@@ -1,0 +1,4 @@
+quant,perplexity
+FP16,47.1
+INT8,47.04
+INT4,49.98
