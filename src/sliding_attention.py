@@ -1,3 +1,19 @@
+"""
+Sliding Window Attention Experiment
+=====================================
+Inspired by:
+- SnapKV (Li et al., 2024): https://arxiv.org/abs/2404.14469
+  "SnapKV: LLM Knows What You are Looking for Before Generation"
+  SnapKV selects important KV cache positions to keep, similar to how
+  sliding window restricts attention to recent tokens only.
+
+- PagedAttention/vLLM (Kwon et al., 2023): https://arxiv.org/abs/2309.06180
+  KV cache memory formula used to compute theoretical memory reduction:
+  Full KV cache  = 2 * seq_len * n_layers * n_heads * head_dim * dtype_bytes
+  Window KV cache = 2 * window  * n_layers * n_heads * head_dim * dtype_bytes
+  Memory reduction = (1 - window/seq_len) * 100%
+"""
+
 import torch
 import time
 import csv
@@ -6,13 +22,33 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 MODEL_NAME = "gpt2-medium"
 
-def kv_cache_bytes_full(seq_len, n_layers=24, n_heads=16, head_dim=64, dtype_bytes=2):
+# GPT-2 medium architecture constants
+N_LAYERS = 24
+N_HEADS = 16
+HEAD_DIM = 64
+
+def kv_cache_bytes_full(seq_len, n_layers=N_LAYERS, n_heads=N_HEADS,
+                         head_dim=HEAD_DIM, dtype_bytes=2):
+    """
+    Theoretical full KV cache size in bytes.
+    Formula from PagedAttention (Kwon et al., 2023).
+    Factor 2 = Keys + Values.
+    """
     return 2 * seq_len * n_layers * n_heads * head_dim * dtype_bytes
 
-def kv_cache_bytes_window(window_size, n_layers=24, n_heads=16, head_dim=64, dtype_bytes=2):
+def kv_cache_bytes_window(window_size, n_layers=N_LAYERS, n_heads=N_HEADS,
+                           head_dim=HEAD_DIM, dtype_bytes=2):
+    """
+    Theoretical windowed KV cache size in bytes.
+    Inspired by SnapKV (Li et al., 2024) token selection strategy.
+    """
     return 2 * window_size * n_layers * n_heads * head_dim * dtype_bytes
 
 def run_window_experiment():
+    """
+    Measure memory reduction and latency across window sizes.
+    Window sizes: 64, 128, 256, 512, Full attention.
+    """
     window_sizes = [64, 128, 256, 512, None]
     seq_len = 512
     rows = []

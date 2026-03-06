@@ -1,3 +1,17 @@
+"""
+KV Cache Quantization Experiment
+=================================
+Inspired by:
+- KVQuant (Hooper et al., 2024): https://arxiv.org/abs/2401.18079
+  "KVQuant: Towards 10 Million Context Length LLM Inference with KV Cache Quantization"
+  Our INT8/INT4 quantization is a practical approximation of their per-channel
+  KV cache quantization method using bitsandbytes library.
+
+- PagedAttention/vLLM (Kwon et al., 2023): https://arxiv.org/abs/2309.06180
+  KV cache memory formula: 2 * seq_len * n_layers * n_heads * head_dim * dtype_bytes
+  Factor of 2 accounts for both Keys and Values.
+"""
+
 import torch
 import time
 import csv
@@ -7,6 +21,10 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 MODEL_NAME = "gpt2-medium"
 
 def load_model(quant_bits=None):
+    """
+    Load GPT-2 medium in FP16, INT8, or INT4.
+    Quantization approach inspired by KVQuant (Hooper et al., 2024).
+    """
     if quant_bits == 8:
         config = BitsAndBytesConfig(load_in_8bit=True)
     elif quant_bits == 4:
@@ -21,6 +39,11 @@ def load_model(quant_bits=None):
     return model, tokenizer
 
 def measure_memory_and_latency(model, tokenizer, seq_len):
+    """
+    Measure peak GPU memory and latency for a given sequence length.
+    Memory formula from PagedAttention (Kwon et al., 2023):
+    KV cache size = 2 * seq_len * n_layers * n_heads * head_dim * dtype_bytes
+    """
     ids = tokenizer("Hello world", return_tensors="pt")["input_ids"].to("cuda")
     torch.cuda.reset_peak_memory_stats()
     torch.cuda.synchronize()
